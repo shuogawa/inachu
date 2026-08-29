@@ -29,5 +29,13 @@ for i, q in enumerate(m for c in code for m in re.findall(r'sql\("""(.*?)"""\)',
         fails.append((i, q.strip().splitlines()[0][:50], out.strip()[:200]))
 
 assert "16" in run("SELECT COUNT(*) FROM car_plan_chairs;"), "座席が16行になっていない"
+
+# 5章: バックエンドの判断（空席→OK / 二重予約→断る / 無い席→断る）
+exec(next(c for c in code if "def q(" in c), ns)
+exec(next(c for c in code if "def reserve(" in c), ns)
+assert ns["reserve"](1, "2A", "テスト").startswith("○")
+assert ns["reserve"](1, "2A", "あと").startswith("✕")
+assert ns["reserve"](1, "9Z", "だれか").startswith("✕")
+print("[reserve] OK")
 assert not fails, fails
 print("全セルOK")
